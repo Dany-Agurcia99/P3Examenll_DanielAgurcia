@@ -1,3 +1,5 @@
+#include <ncurses.h>
+
 #include <iostream>
 using std::cin;
 using std::cout;
@@ -12,10 +14,16 @@ using std::vector;
 #include "Militar.h"
 #include "NodoArbol.h"
 
+#include <fstream>
+using std::ofstream;
+
+#include <sstream>
+using std::stringstream;
+
 void CrearMilitar();
 void VisualizarEjercito();
 void RecursivoAgregar(NodoArbol *, string);
-void RecursivoVisualizar(NodoArbol *);
+string RecursivoVisualizar(NodoArbol *,string);
 
 Militar *general = new Militar("Yagabarish Skobernov", "M_a7", "72,", "General");
 vector<NodoArbol *> hijos;
@@ -24,6 +32,10 @@ NodoArbol *raiz = new NodoArbol(general, hijos);
 
 int main()
 {
+    Militar *general = new Militar("Yagabarish Skobernov", "M_a7", "72,", "General");
+    vector<NodoArbol *> hijos;
+    vector<NodoArbol *> TipoActual;
+    NodoArbol *raiz = new NodoArbol(general, hijos);
     int opcion = 0;
     while (opcion != 3)
     {
@@ -41,12 +53,19 @@ int main()
         case 2:
             VisualizarEjercito();
             break;
+        case 3:
+            for (int i = 0; i < TipoActual.size(); i++)
+            {
+                delete TipoActual[i];
+            }
+            break;
         }
     }
     return 0;
 }
 void CrearMilitar()
 {
+    TipoActual.clear();
     int opcion;
     int posicion;
     string nombre, codigo, edad, rango;
@@ -74,7 +93,7 @@ void CrearMilitar()
         cin >> edad;
         Militar *nuevoMilitar = new Militar(nombre, codigo, edad, rango);
         NodoArbol *nuevoNodo = new NodoArbol(nuevoMilitar, hijos);
-        raiz->getNodoHijos().push_back(nuevoNodo);
+        raiz->agregarHijos(nuevoNodo);
     }
     break;
     case 2:
@@ -97,7 +116,7 @@ void CrearMilitar()
             cin >> edad;
             Militar *nuevoMilitar = new Militar(nombre, codigo, edad, rango);
             NodoArbol *nuevoNodo = new NodoArbol(nuevoMilitar, hijos);
-            TipoActual[posicion]->getNodoHijos().push_back(nuevoNodo);
+            TipoActual[posicion]->agregarHijos(nuevoNodo);
         }
         else
         {
@@ -125,7 +144,7 @@ void CrearMilitar()
             cin >> edad;
             Militar *nuevoMilitar = new Militar(nombre, codigo, edad, rango);
             NodoArbol *nuevoNodo = new NodoArbol(nuevoMilitar, hijos);
-            TipoActual[posicion]->getNodoHijos().push_back(nuevoNodo);
+            TipoActual[posicion]->agregarHijos(nuevoNodo);
         }
         else
         {
@@ -153,7 +172,7 @@ void CrearMilitar()
             cin >> edad;
             Militar *nuevoMilitar = new Militar(nombre, codigo, edad, rango);
             NodoArbol *nuevoNodo = new NodoArbol(nuevoMilitar, hijos);
-            TipoActual[posicion]->getNodoHijos().push_back(nuevoNodo);
+            TipoActual[posicion]->agregarHijos(nuevoNodo);
         }
         else
         {
@@ -181,7 +200,7 @@ void CrearMilitar()
             cin >> edad;
             Militar *nuevoMilitar = new Militar(nombre, codigo, edad, rango);
             NodoArbol *nuevoNodo = new NodoArbol(nuevoMilitar, hijos);
-            TipoActual[posicion]->getNodoHijos().push_back(nuevoNodo);
+            TipoActual[posicion]->agregarHijos(nuevoNodo);
         }
         else
         {
@@ -209,7 +228,7 @@ void CrearMilitar()
             cin >> edad;
             Militar *nuevoMilitar = new Militar(nombre, codigo, edad, rango);
             NodoArbol *nuevoNodo = new NodoArbol(nuevoMilitar, hijos);
-            TipoActual[posicion]->getNodoHijos().push_back(nuevoNodo);
+            TipoActual[posicion]->agregarHijos(nuevoNodo);
         }
         else
         {
@@ -237,7 +256,7 @@ void CrearMilitar()
             cin >> edad;
             Militar *nuevoMilitar = new Militar(nombre, codigo, edad, rango);
             NodoArbol *nuevoNodo = new NodoArbol(nuevoMilitar, hijos);
-            TipoActual[posicion]->getNodoHijos().push_back(nuevoNodo);
+            TipoActual[posicion]->agregarHijos(nuevoNodo);
         }
         else
         {
@@ -250,6 +269,60 @@ void CrearMilitar()
 
 void VisualizarEjercito()
 {
+    string nombreArchivo;
+    string x="";
+    string salida = RecursivoVisualizar(raiz,x);
+    cout << "Ingrese el nombre del Ejercito: ";
+    cin >> nombreArchivo;
+    string filename = "Listados/"+nombreArchivo + ".txt";
+    ofstream file;
+    file.open(filename);
+    if (file.is_open())
+    {
+        cout << "Cdcdcd";
+        file << salida << endl;
+        file.close();
+    }
+    cout << "Se guardo el ejercito con exito" << endl;
+    initscr();
+    noecho();
+    start_color();
+    init_pair(1, COLOR_GREEN, COLOR_WHITE);
+    wbkgd(stdscr, COLOR_PAIR(1));
+    printw("%s", salida.c_str());
+    refresh();
+    char entradaTeclado = getch();
+    while (entradaTeclado != 'x')
+    {
+
+        if (entradaTeclado == 'n')
+        {
+            start_color();
+            init_pair(2, COLOR_GREEN, COLOR_BLACK);
+            wbkgd(stdscr, COLOR_PAIR(2));
+        }
+        else if (entradaTeclado == 'i')
+        {
+            start_color();
+            init_pair(3, COLOR_BLACK, COLOR_WHITE);
+            wbkgd(stdscr, COLOR_PAIR(3));
+        }
+        else if (entradaTeclado == 'c')
+        {
+            start_color();
+            init_pair(4, COLOR_BLUE, COLOR_RED);
+            wbkgd(stdscr, COLOR_PAIR(4));
+        }
+        else if (entradaTeclado == 'l')
+        {
+            start_color();
+            init_pair(5, COLOR_BLUE, COLOR_WHITE);
+            wbkgd(stdscr, COLOR_PAIR(5));
+        }
+        entradaTeclado = getch();
+        refresh();
+    }
+    endwin();
 }
 
 void RecursivoAgregar(NodoArbol *nodoRaiz, string rangoBuscar)
@@ -263,42 +336,43 @@ void RecursivoAgregar(NodoArbol *nodoRaiz, string rangoBuscar)
         RecursivoAgregar(nodoRaiz->getNodoHijos()[i], rangoBuscar);
     }
 }
-void RecursivoVisualizar(NodoArbol *nodoRaiz)
+string RecursivoVisualizar(NodoArbol *nodoRaiz,string salida)
 {
     if (nodoRaiz->getmilitar()->getrango() == "General")
     {
-        cout << "*" + nodoRaiz->getmilitar()->getnombre() + " - " + nodoRaiz->getmilitar()->getrango();
+        salida += "*" + nodoRaiz->getmilitar()->getnombre() + " - " + nodoRaiz->getmilitar()->getrango() + "\n";
     }
     else if (nodoRaiz->getmilitar()->getrango() == "Coronel")
     {
-        cout << "   *" + nodoRaiz->getmilitar()->getnombre() + " - " + nodoRaiz->getmilitar()->getrango();
+        salida += "   *" + nodoRaiz->getmilitar()->getnombre() + " - " + nodoRaiz->getmilitar()->getrango() + "\n";
     }
     else if (nodoRaiz->getmilitar()->getrango() == "Mayor")
     {
-        cout << "       *" + nodoRaiz->getmilitar()->getnombre() + " - " + nodoRaiz->getmilitar()->getrango();
+        salida += "       *" + nodoRaiz->getmilitar()->getnombre() + " - " + nodoRaiz->getmilitar()->getrango() + "\n";
     }
     else if (nodoRaiz->getmilitar()->getrango() == "Capitan")
     {
-        cout << "           *" + nodoRaiz->getmilitar()->getnombre() + " - " + nodoRaiz->getmilitar()->getrango();
+        salida += "           *" + nodoRaiz->getmilitar()->getnombre() + " - " + nodoRaiz->getmilitar()->getrango() + "\n";
     }
     else if (nodoRaiz->getmilitar()->getrango() == "Teniente")
     {
-        cout << "               *" + nodoRaiz->getmilitar()->getnombre() + " - " + nodoRaiz->getmilitar()->getrango();
+        salida += "               *" + nodoRaiz->getmilitar()->getnombre() + " - " + nodoRaiz->getmilitar()->getrango() + "\n";
     }
     else if (nodoRaiz->getmilitar()->getrango() == "Sargento")
     {
-        cout << "                   *" + nodoRaiz->getmilitar()->getnombre() + " - " + nodoRaiz->getmilitar()->getrango();
+        salida += "                   *" + nodoRaiz->getmilitar()->getnombre() + " - " + nodoRaiz->getmilitar()->getrango() + "\n";
     }
     else if (nodoRaiz->getmilitar()->getrango() == "Cabo")
     {
-        cout << "                       *" + nodoRaiz->getmilitar()->getnombre() + " - " + nodoRaiz->getmilitar()->getrango();
+        salida += "                       *" + nodoRaiz->getmilitar()->getnombre() + " - " + nodoRaiz->getmilitar()->getrango() + "\n";
     }
     else if (nodoRaiz->getmilitar()->getrango() == "Soldado")
     {
-        cout << "                           *" + nodoRaiz->getmilitar()->getnombre() + " - " + nodoRaiz->getmilitar()->getrango();
+        salida += "                           *" + nodoRaiz->getmilitar()->getnombre() + " - " + nodoRaiz->getmilitar()->getrango() + "\n";
     }
     for (int i = 0; i < nodoRaiz->getNodoHijos().size(); i++)
     {
-        RecursivoVisualizar(nodoRaiz->getNodoHijos()[i]);
+        RecursivoVisualizar(nodoRaiz->getNodoHijos()[i],salida);
     }
+    return salida;
 }

@@ -31,6 +31,11 @@ void NodoArbol::setNodoHijos(vector<NodoArbol *> NodoHijos)
     this->NodoHijos = NodoHijos;
 }
 
+void NodoArbol::agregarHijos(NodoArbol *nodoHijo)
+{
+    NodoHijos.push_back(nodoHijo);
+}
+
 string NodoArbol::toString()
 {
     string NodoArbolStr;

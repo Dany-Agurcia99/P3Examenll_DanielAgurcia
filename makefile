@@ -1,5 +1,5 @@
 run: Main.o Militar.o NodoArbol.o 
-	g++ Main.o Militar.o NodoArbol.o -o run
+	g++ Main.o Militar.o NodoArbol.o -lncurses -o run
 Main.o: Main.cpp Militar.h NodoArbol.h 
 	g++ -c Main.cpp
 Militar.o: Militar.h Militar.cpp

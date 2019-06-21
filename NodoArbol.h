@@ -7,7 +7,7 @@ using std::vector;
 
 class NodoArbol
 {
-private:
+public:
     Militar *militar;
     vector<NodoArbol *> NodoHijos;
 
@@ -20,6 +20,8 @@ public:
 
     vector<NodoArbol *> getNodoHijos();
     void setNodoHijos(vector<NodoArbol *>);
+
+    void agregarHijos(NodoArbol*);
 
     string toString();
 };
