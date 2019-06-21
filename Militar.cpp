@@ -56,6 +56,6 @@ void Militar::setrango(string rango)
 string Militar::toString()
 {
     string MilitarStr;
-    MilitarStr = rango;
+    MilitarStr = nombre + " - " + rango;
     return MilitarStr;
 }
